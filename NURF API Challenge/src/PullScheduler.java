@@ -9,32 +9,32 @@ import java.util.List;
 
 
 public class PullScheduler {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		Archiver archiver = new Archiver();
 		List<Date> eightHours;
-		try{
 		while(true){
-			eightHours = getEightHoursOfCleanDates();
-			archiver.pruneEightHoursList(eightHours);
-			ChampSelectData moment;
-			for(Date d: eightHours){
-				moment = doorToDoorMoment(d.getTime());
-				if(moment != null){
-					archiver.saveMoment(d, moment);
+			try{
+				eightHours = getEightHoursOfCleanDates();
+				archiver.pruneEightHoursList(eightHours);
+				ChampSelectData moment;
+				for(Date d: eightHours){
+					moment = doorToDoorMoment(d.getTime());
+					if(moment != null){
+						archiver.saveMoment(d, moment);
+					}
+					else{
+						System.out.println("Too far back: "+d.toString()+". Current time: "+new Date().toString());
+					}
 				}
-				else{
-					System.out.println("Too far back: "+d.toString()+". Current time: "+new Date().toString());
-				}
+			}catch (Exception e){
+				File errorFile = new File("Error.txt");
+				try{
+				BufferedWriter bw = new BufferedWriter(new FileWriter(errorFile));
+				bw.write(e.toString());
+				bw.close();
+				}catch (Exception e2){}
 			}
 			Thread.sleep(300000); // sleep for 5 minutes
-		}
-		}catch (Exception e){
-			File errorFile = new File("Error.txt");
-			try{
-			BufferedWriter bw = new BufferedWriter(new FileWriter(errorFile));
-			bw.write(e.toString());
-			bw.close();
-			}catch (Exception e2){}
 		}
 	}
 	
