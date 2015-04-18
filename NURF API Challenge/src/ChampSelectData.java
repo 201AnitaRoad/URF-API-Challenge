@@ -49,4 +49,6 @@ public class ChampSelectData implements Serializable{
 		}
 		return toReturn.toString();
 	}
+	
+	
 }

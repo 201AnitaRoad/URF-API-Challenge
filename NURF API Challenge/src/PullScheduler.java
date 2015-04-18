@@ -10,7 +10,13 @@ import java.util.List;
 
 public class PullScheduler {
 	public static void main(String[] args) throws InterruptedException {
-		Archiver archiver = new Archiver();
+		Archiver archiver = null;
+		try {
+			archiver = new Archiver();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		List<Date> eightHours;
 		while(true){
 			try{

@@ -67,4 +67,11 @@ public class Utility {
 		Long baseEpoch = convertDateToEpoch(date);
 		return new Date(baseEpoch + 300000);
 	}
+	
+	public static boolean isEmpty(ChampSelectData moment){
+		for(int i = 0; i < moment.selections.length; i++){
+			if(moment.selections[i] != 0){return false;}
+		}
+		return true;
+	}
 }

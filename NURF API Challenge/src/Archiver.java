@@ -1,3 +1,4 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,10 +12,24 @@ import java.util.List;
 
 public class Archiver {
 	private String dirPath = "momentdata";
-	private File dirFile;
-	public Archiver(){
+	private String dumpPath = "consoledump.txt";
+	private BufferedWriter dumpStream;
+	private File dirFile, dumpFile;
+	public Archiver() throws IOException{
 		dirFile = new File(dirPath);
 		dirFile.mkdir();
+		
+		dumpFile = new File(dumpPath);
+		if(dumpFile.exists()){
+			dumpFile.delete();
+		}
+		dumpFile.createNewFile();
+		dumpStream = new BufferedWriter(new FileWriter(dumpFile.getAbsolutePath()));
+	}
+	
+	public void dump(String s) throws IOException{
+		dumpStream.write(s);
+		dumpStream.flush();
 	}
 	
 	public void saveMoment(Date date, ChampSelectData champSelectData){
@@ -28,7 +43,6 @@ public class Archiver {
 			objectOutputStream.writeObject(champSelectData);
 			objectOutputStream.close();
 		} catch (IOException e) {
-			System.out.println("We fucked up and are fuckboys. \n");
 			e.printStackTrace();
 		} finally{}
 	}
@@ -36,7 +50,11 @@ public class Archiver {
 	public ChampSelectData loadMoment(Date date){
 		String dateName = Utility.convertDateToEpoch(date).toString();
 		File momentFile = new File(dirFile, dateName);
-		if(!momentFile.exists()){return null;}
+		if(!momentFile.exists()){
+			System.out.println("Missing moment, Date: "+date.toString());
+			System.out.println("Moving on to next bucket-kun!~");
+			return null;
+		}
 		ObjectInputStream oIS;
 		ChampSelectData toReturn = null;
 		try{
@@ -44,9 +62,9 @@ public class Archiver {
 			toReturn = (ChampSelectData)oIS.readObject();
 			oIS.close();
 		} catch (Exception e){
-			System.out.println("Our load is jabronied.\n");
 			e.printStackTrace();
 		}
+		if(Utility.isEmpty(toReturn)){return null;}
 		return toReturn;
 	}
 	
